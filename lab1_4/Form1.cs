@@ -57,7 +57,6 @@ namespace lab
             Gl.glEnable(Gl.GL_LIGHT0);
             // установка первых элементов в списках combobox
             comboBox1.SelectedIndex = 0;
-            comboBox2.SelectedIndex = 0;
             // активация таймера, вызывающего функцию для визуализации
             RenderTimer.Start();
         }
@@ -161,6 +160,54 @@ namespace lab
             }
         }
 
+        private void DrawCube(float size)
+        {
+            if (Wire) // если установлен сеточный режим визуализации
+                Glut.glutWireCube(size);
+            else
+                Glut.glutSolidCube(size);
+        }
+
+        private void DrawSphere(float radius)
+        {
+            if (Wire) // если установлен сеточный режим визуализации
+                Glut.glutWireSphere(radius, 16, 16); // сеточная сфера
+            else
+                Glut.glutSolidSphere(radius, 16, 16); // полигональная сфера
+        }
+
+        private void DrawCylinder(float radius, float height)
+        {
+            if (Wire) // если установлен сеточный режим визуализации
+                Glut.glutWireCylinder(radius, height, 16, 16); // цилиндр
+            else
+                Glut.glutSolidCylinder(radius, height, 16, 16);
+        }
+
+        private void DrawCone(float radius, float height)
+        {
+            if (Wire) // если установлен сеточный режим визуализации
+                Glut.glutWireCone(radius, height, 32, 32); // конус
+            else
+                Glut.glutSolidCone(radius, height, 32, 32);
+        }
+
+
+        private void DrawAntennae(float scale=1)
+        {
+            Gl.glPushMatrix();
+
+            Gl.glRotated(-90, 1, 0, 0);
+            DrawCylinder(scale * 0.1f, scale * 2);
+
+            Gl.glRotated(90, 1, 0, 0);
+            Gl.glTranslated(0, scale * 2, 0);
+            DrawSphere(scale * 0.15f);
+
+            Gl.glPopMatrix();
+        }
+
+
         // функция отрисовки
         private void Draw()
         {
@@ -169,60 +216,86 @@ namespace lab
             Gl.glClearColor(255, 255, 255, 1);
             // очищение текущей матрицы
             Gl.glLoadIdentity();
-            // помещаем состояние матрицы в стек матриц, дальнейшие трансформации затронут только визуализацию объекта
+
             Gl.glPushMatrix();
-            // производим перемещение в зависимости от значений, полученных при перемещении ползунков
-            Gl.glTranslated(a, b, c);
-            // поворот по установленной оси
             Gl.glRotated(d, os_x, os_y, os_z);
-            // и масштабирование объекта
+            Gl.glTranslated(a, b, c);
             Gl.glScaled(zoom, zoom, zoom);
-            // в зависимости от установленного типа объекта
-            switch (comboBox2.SelectedIndex)
-            {
-                // рисуем нужный объект, используя функции библиотеки GLUT
-                case 0:
-                    {
-                        if (Wire) // если установлен сеточный режим визуализации
-                            Glut.glutWireSphere(2, 16, 16); // сеточная сфера
-                        else
-                            Glut.glutSolidSphere(2, 16, 16); // полигональная сфера
-                        break;
-                    }
-                case 1:
-                    {
-                        if (Wire) // если установлен сеточный режим визуализации
-                            Glut.glutWireCylinder(1, 2, 32, 32); // цилиндр
-                        else
-                            Glut.glutSolidCylinder(1, 2, 32, 32);
-                        break;
-                    }
-                case 2:
-                    {
-                        if (Wire) // если установлен сеточный режим визуализации
-                            Glut.glutWireCube(2); // куб
-                        else
-                            Glut.glutSolidCube(2);
-                        break;
-                    }
-                case 3:
-                    {
-                        if (Wire) // если установлен сеточный режим визуализации
-                            Glut.glutWireCone(2, 3, 32, 32); // конус
-                        else
-                            Glut.glutSolidCone(2, 3, 32, 32);
-                        break;
-                    }
-                case 4:
-                    {
-                        if (Wire) // если установлен сеточный режим визуализации
-                            Glut.glutWireTorus(0.2, 2.2, 32, 32); // тор
-                        else
-                            Glut.glutSolidTorus(0.2, 2.2, 32, 32);
-                        break;
-                    }
-            }
-            // возвращаем состояние матрицы
+
+
+
+            // Раковина
+            Gl.glPushMatrix();
+            Gl.glTranslated(1, 0.5f, 0);
+            DrawSphere(1f);
+            Gl.glPopMatrix();
+
+
+
+            // Тело
+            Gl.glPushMatrix();
+            Gl.glTranslated(1, -0.1, 0);
+            Gl.glRotated(-90, 0, 1, 0);
+            DrawCylinder(0.4f, 2f);
+            Gl.glPopMatrix();
+
+            Gl.glPushMatrix();
+            Gl.glTranslated(1.5, -0.1, 0);
+            Gl.glRotated(90, 0, 1, -0.55f);
+            DrawCone(0.4f, 0.8f);
+            Gl.glPopMatrix();
+
+
+
+            // Голова
+            Gl.glPushMatrix();
+            Gl.glTranslated(-1, -0.1, 0);
+            DrawSphere(0.4f);
+            Gl.glPopMatrix();
+
+
+
+            //Усики
+            Gl.glPushMatrix();
+            Gl.glTranslated(-1, 0.1, 0.2);
+            Gl.glRotated(45, 0, 0.5, 1);
+            DrawAntennae(0.5f);
+            Gl.glPopMatrix();
+
+            Gl.glPushMatrix();
+            Gl.glTranslated(-1, 0.1, -0.2);
+            Gl.glRotated(45, 0, -0.5, 1);
+            Gl.glScaled(0.5, 0.5, 0.5);
+            DrawAntennae();
+            Gl.glPopMatrix();
+
+            Gl.glPushMatrix();
+            Gl.glTranslated(-1, -0.2, 0.2);
+            Gl.glRotated(120, 0, 0.5, 1);
+            DrawAntennae(0.2f);
+            Gl.glPopMatrix();
+
+            Gl.glPushMatrix();
+            Gl.glTranslated(-1, -0.2, -0.2);
+            Gl.glRotated(120, 0, -0.5, 1);
+            DrawAntennae(0.2f);
+            Gl.glPopMatrix();
+
+
+            //  Цилиндр
+            Gl.glPushMatrix();
+            Gl.glTranslated(-0.9, 0.32, 0);
+            Gl.glRotated(90, 1, 0, 0);
+            DrawCylinder(0.3f, 0.05f);
+            Gl.glPopMatrix();
+
+            Gl.glPushMatrix();
+            Gl.glTranslated(-0.9, 0.3, 0);
+            Gl.glRotated(-90, 1, 0, 0);
+            DrawCylinder(0.25f, 0.4f);
+            Gl.glPopMatrix();
+
+
             Gl.glPopMatrix();
             // завершаем рисование
             Gl.glFlush();

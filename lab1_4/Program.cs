@@ -1,4 +1,4 @@
-﻿using lab1_4;
+﻿using lab;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +17,7 @@ namespace lab2
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form3_2());
+            Application.Run((System.Windows.Forms.Form)new lab.Form1());
         }
     }
 }
